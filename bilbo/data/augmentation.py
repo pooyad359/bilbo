@@ -125,7 +125,7 @@ class PadToSize:
         return box_out, yout
 
 
-class Normalize:
+class MinMaxNormalize:
     def __init__(self, p=0.5, eps=1e-12):
         self.p = p
         self.eps = eps
@@ -143,6 +143,28 @@ class Normalize:
         xy_min = np.array([xmin, ymin])
         xy_max = np.array([xmax, ymax])
         xy_out = mask[:, None] * (_xy - xy_min) / (xy_max - xy_min + self.eps)
+        box_out = xy_out.reshape(-1, 8)
+        return box_out, relation
+
+
+class ZScoreNormalize:
+    def __init__(self, p=0.5, eps=1e-12):
+        self.p = p
+        self.eps = eps
+
+    def __call__(self, boxes, relation):
+        if np.random.rand() > self.p:
+            return boxes, relation
+        _mask = np.any(boxes, axis=1)
+        _xy = np.reshape(boxes, (-1, 2))
+        mask = np.stack([_mask] * 4).T.flatten()
+        xmean = _xy[mask, 0].mean()
+        ymean = _xy[mask, 1].mean()
+        xstd = _xy[mask, 0].std()
+        ystd = _xy[mask, 1].std()
+        xy_mean = np.array([xmean, ymean])
+        xy_std = np.array([xstd, ystd])
+        xy_out = mask[:, None] * (_xy - xy_mean) / (xy_std + self.eps)
         box_out = xy_out.reshape(-1, 8)
         return box_out, relation
 
@@ -217,7 +239,7 @@ class SplineDistortion:
 
 class ToTensor:
     def __init__(self, normalize=False):
-        self.normalizer = Normalize(p=1) if normalize else None
+        self.normalizer = ZScoreNormalize(p=1) if normalize else None
 
     def __call__(self, boxes, relation):
         if self.normalizer is not None:
