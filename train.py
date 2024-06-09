@@ -19,7 +19,7 @@ from bilbo.data.dataset import BilboDataset
 from bilbo.model import BilboModel
 
 
-def get_dataloader(max_length=128, batch_size=4, split="train"):
+def get_dataloader(max_length=256, batch_size=4, split="train"):
     tsfms = Transform(
         [
             RandomCrop(p=1, final_size=max_length * 2),
@@ -68,8 +68,8 @@ def run_validation(model, dl_val):
 def train(checkpoint=None):
     # Parameters
     input_size = 8  # 4 pairs of x and y
-    n_layers = 2
-    max_len = 128
+    n_layers = 5
+    max_len = 256
     lr = 1e-5
     batch_size = 32
     epochs = 100
