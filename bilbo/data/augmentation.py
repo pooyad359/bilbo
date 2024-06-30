@@ -237,6 +237,19 @@ class SplineDistortion:
         return box_out, relation
 
 
+class RandomJitter:
+    def __init__(self, p=0.5, amp_range=(-2, 2)):
+        self.p = p
+        self.amp_range = amp_range
+
+    def __call__(self, boxes, relation):
+        if np.random.rand() > self.p:
+            return boxes, relation
+        jitter = np.random.randint(*self.amp_range, boxes.shape)
+        box_out = boxes + jitter
+        return box_out, relation
+
+
 class ToTensor:
     def __init__(self, normalize=False):
         self.normalizer = ZScoreNormalize(p=1) if normalize else None
