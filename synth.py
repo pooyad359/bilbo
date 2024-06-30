@@ -47,11 +47,12 @@ def synthesize():
     return params, _x, _y
 
 
-def batch_synthesize(n):
+def batch_synthesize(n, name="train"):
     for _ in rich.progress.track(range(n)):
         params, x, y = synthesize()
-        np.savez(f"data/val/{uuid4()}.npz", x=x, y=y)
+        np.savez(f"data/{name}/{uuid4()}.npz", x=x, y=y)
 
 
 if __name__ == "__main__":
-    batch_synthesize(200)
+    batch_synthesize(50, "train")
+    batch_synthesize(50, "val")
