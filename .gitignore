@@ -14,3 +14,19 @@ build/
 # Virtual environments
 venv/
 env/
+
+# Model files
+*.h5
+*.hdf5
+*.pth
+
+# Data files
+data/
+samples/
+
+# Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# VS Code
+.vscode/
